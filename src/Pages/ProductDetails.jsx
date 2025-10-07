@@ -4,7 +4,7 @@ import useProducts from '../Hooks/useProducts';
 
 const ProductDetails = () => {
   const { id } = useParams()
-  const { products, loading,  } = useProducts()
+  const { products, loading, } = useProducts()
 
   const product = products.find(p => String(p.id) === id)
   if (loading) {
@@ -45,9 +45,9 @@ const ProductDetails = () => {
         </div>
       </div>
     </div>
- 
+
   );
-  
+
 };
 
 

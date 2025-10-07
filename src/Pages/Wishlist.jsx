@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const Wishlist = () => {
   const [sortOrder, setSortOrder] = useState('none')
@@ -7,6 +8,8 @@ const Wishlist = () => {
     const savedList = JSON.parse(localStorage.getItem('wishlist'))
     if (savedList) setWishlist(savedList)
   }, [])
+
+  if(!wishlist.length) return <p className='text-2xl font-bold'>No Data Avilable</p>
 
   const sortedItem = (
     () => {
@@ -19,7 +22,32 @@ const Wishlist = () => {
       else {
         return wishlist
       }
+
     })()
+
+// wishLish card remove
+  const handleRemove = (id) => {
+    const existingList = JSON.parse(localStorage.getItem('wishlist'))
+    let updatedList = existingList.filter(p => p.id !== id)
+    //  for ui instant update
+    setWishlist(updatedList)
+    localStorage.setItem('wishlist', JSON.stringify(updatedList))
+
+  }
+
+  // generate chat data
+  const totalByCategory = {}
+  wishlist.forEach(product => {
+    const category = product.category
+    totalByCategory[category ] = (totalByCategory[category] || 0 + product.price)
+  })
+
+  const chartData = Object.keys(totalByCategory).map(category => ({
+     category,
+    total: totalByCategory[category]
+  }))
+  console.log(chartData);
+  
 
 
   return (
@@ -56,7 +84,7 @@ const Wishlist = () => {
                   </div>
                   <div className="pr-4 flex items-center gap-3">
                     <div className='font-semibold'>${p.price}</div>
-                    <button className='btn btn-outline'>Remove</button>
+                    <button onClick={() => handleRemove(p.id)} className='btn btn-outline'>Remove</button>
                   </div>
                 </div>
               </div>
@@ -65,6 +93,31 @@ const Wishlist = () => {
         }
       </div>
 
+      {/* chart */}
+      <div className='space-y-3'>
+        <h3 className='text-xl font-semibold'>WishtList Summery</h3>
+        <div className='bg-base-100 border p-4 rounded-xl h-80'>
+
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+             
+              data={chartData}
+             
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="category" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+
+            
+
+              <Bar dataKey="total" fill="#82ca9d"  />
+            </BarChart>
+          </ResponsiveContainer>
+
+        </div>
+      </div>
     </div>
   );
 };
